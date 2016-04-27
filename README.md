@@ -1,4 +1,4 @@
-# Seed Buddhist Year 0.9
+# Seed Buddhist Year 0.9.0
 Buddhist Year WordPress Plugin
 
 ## English Language
