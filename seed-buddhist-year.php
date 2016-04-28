@@ -136,3 +136,21 @@ if(class_exists('Seed_Buddhist_Year'))
 	function seed_buddhist_year_the_time($content = '', $format = '') {
 		return get_the_time( $format );
 	}
+
+	function seed_buddhist_year( $format = '', $time = null ) {
+		if( $format == '' ) {
+			$format = get_option( 'date_format' );
+		}
+
+		if( $time === null ) {
+			$time = time();
+		}
+
+		if( ( $format != 'c' ) && ( $format != 'r' )  && ( $format != 'U' )) {
+			$buddhist_time = strtotime( "543 years", $time ); 
+		} else {
+			$buddhist_time = strtotime( $time ) ;
+		}
+
+		return date_i18n( $format, $buddhist_time );
+	}
