@@ -1,6 +1,8 @@
 # Seed Buddhist Year 0.9.0
 Buddhist Year WordPress Plugin
 
+Seed Buddhist Year will change output year to Buddhist year or Buddhist Era (BE) but not effect microformat, which uses Christian/Common Era (CE).
+
 ## English Language
 
 ### How to use?
