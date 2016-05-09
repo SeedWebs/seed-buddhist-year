@@ -96,31 +96,12 @@ if(class_exists('Seed_Buddhist_Year'))
 
 			$the_date = strtotime( $the_date );
 
-			if( date( 'L', $the_date ) == 0 ) {
-				$return = date_i18n( $format, strtotime( "543 years", $the_date ) );
-			} else {
-				$return = '';
+			$return = '';
 
-				$index = 0;
+			$index = 0;
 
-				while( $offset !== FALSE ) {
-					$_sub_format = substr( $format, $index, $offset - $index );
-
-					if( $_sub_format != '' ) {
-						if( trim( $_sub_format ) == '' )
-							$return .= $_sub_format;
-						else
-							$return .= date_i18n( $_sub_format, $the_date );
-					}
-
-					$year_format = substr( $format, $offset , 1 );
-					$return .= date_i18n( $year_format, strtotime( "543 years", $the_date ) );
-
-					$index = $offset + 1;
-					$offset = strpos( strtoupper( $format ), 'Y', $index );
-				}
-
-				$_sub_format = substr( $format, $index );
+			while( $offset !== FALSE ) {
+				$_sub_format = substr( $format, $index, $offset - $index );
 
 				if( $_sub_format != '' ) {
 					if( trim( $_sub_format ) == '' )
@@ -128,6 +109,21 @@ if(class_exists('Seed_Buddhist_Year'))
 					else
 						$return .= date_i18n( $_sub_format, $the_date );
 				}
+
+				$year_format = substr( $format, $offset , 1 );
+				$return .= date_i18n( $year_format, strtotime( "543 years", $the_date ) );
+
+				$index = $offset + 1;
+				$offset = strpos( strtoupper( $format ), 'Y', $index );
+			}
+
+			$_sub_format = substr( $format, $index );
+
+			if( $_sub_format != '' ) {
+				if( trim( $_sub_format ) == '' )
+					$return .= $_sub_format;
+				else
+					$return .= date_i18n( $_sub_format, $the_date );
 			}
 		}			
 
@@ -163,31 +159,12 @@ if(class_exists('Seed_Buddhist_Year'))
 
 			$the_date = strtotime( $the_date );
 
-			if( date( 'L', $the_date ) == 0 ) {
-				$return = date_i18n( $format, strtotime( "543 years", $the_date ) );
-			} else {
-				$return = '';
+			$return = '';
 
-				$index = 0;
+			$index = 0;
 
-				while( $offset !== FALSE ) {
-					$_sub_format = substr( $format, $index, $offset - $index );
-
-					if( $_sub_format != '' ) {
-						if( trim( $_sub_format ) == '' )
-							$return .= $_sub_format;
-						else
-							$return .= date_i18n( $_sub_format, $the_date );
-					}
-
-					$year_format = substr( $format, $offset , 1 );
-					$return .= date_i18n( $year_format, strtotime( "543 years", $the_date ) );
-
-					$index = $offset + 1;
-					$offset = strpos( strtoupper( $format ), 'Y', $index );
-				}
-
-				$_sub_format = substr( $format, $index );
+			while( $offset !== FALSE ) {
+				$_sub_format = substr( $format, $index, $offset - $index );
 
 				if( $_sub_format != '' ) {
 					if( trim( $_sub_format ) == '' )
@@ -195,6 +172,21 @@ if(class_exists('Seed_Buddhist_Year'))
 					else
 						$return .= date_i18n( $_sub_format, $the_date );
 				}
+
+				$year_format = substr( $format, $offset , 1 );
+				$return .= date_i18n( $year_format, strtotime( "543 years", $the_date ) );
+
+				$index = $offset + 1;
+				$offset = strpos( strtoupper( $format ), 'Y', $index );
+			}
+
+			$_sub_format = substr( $format, $index );
+
+			if( $_sub_format != '' ) {
+				if( trim( $_sub_format ) == '' )
+					$return .= $_sub_format;
+				else
+					$return .= date_i18n( $_sub_format, $the_date );
 			}
 		}			
 
@@ -206,6 +198,8 @@ if(class_exists('Seed_Buddhist_Year'))
 	}
 
 	function seed_buddhist_year( $format = '', $time = null ) {
+		$return = '';
+
 		if( $format == '' ) {
 			$format = get_option( 'date_format' );
 		}
@@ -214,11 +208,37 @@ if(class_exists('Seed_Buddhist_Year'))
 			$time = time();
 		}
 
-		if( ( $format != 'c' ) && ( $format != 'r' )  && ( $format != 'U' )) {
-			$buddhist_time = strtotime( "543 years", $time ); 
+		if( FALSE !== ( $offset = strpos( strtoupper( $format ) , 'Y' ) ) ) {
+			$index = 0;
+
+			while( $offset !== FALSE ) {
+				$_sub_format = substr( $format, $index, $offset - $index );
+
+				if( $_sub_format != '' ) {
+					if( trim( $_sub_format ) == '' )
+						$return .= $_sub_format;
+					else
+						$return .= date_i18n( $_sub_format, $time );
+				}
+
+				$year_format = substr( $format, $offset , 1 );
+				$return .= date_i18n( $year_format, strtotime( "543 years", $time ) );
+
+				$index = $offset + 1;
+				$offset = strpos( strtoupper( $format ), 'Y', $index );
+			}
+
+			$_sub_format = substr( $format, $index );
+
+			if( $_sub_format != '' ) {
+				if( trim( $_sub_format ) == '' )
+					$return .= $_sub_format;
+				else
+					$return .= date_i18n( $_sub_format, $time );
+			}
 		} else {
-			$buddhist_time = strtotime( $time ) ;
+			$return = date_i18n( $format, $time );
 		}
 
-		return date_i18n( $format, $buddhist_time );
+		return $return;
 	}
