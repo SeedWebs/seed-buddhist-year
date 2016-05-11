@@ -3,8 +3,8 @@ Contributors: SeedThemes
 Donate link: http://seedthemes.com/
 Tags: Buddhist, date, time, year
 Requires at least: 4.0.1
-Tested up to: 4.5.1
-Stable tag: 0.9.0
+Tested up to: 4.5.2
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,11 +51,19 @@ This plugin will not work if your theme user other standard ways to output the d
 
 == Changelog ==
 
+= 1.0.0 =
+
+Release date: 2016-05-11
+* Fix leap year problem.
+
 = 0.9.0 =
 * First version.
 
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+Fix leap year problem.
 
 = 0.9.0 =
 Just start.
