@@ -51,10 +51,11 @@ This plugin will not work if your theme user other standard ways to output the d
 
 == Changelog ==
 
+= 1.0.1 =
+* Support comment date.
+
 = 1.0.0 =
-
-Release date: 2016-05-11
-
+* Release date: 2016-05-11
 * Fix leap year problem.
 
 = 0.9.0 =
@@ -62,6 +63,8 @@ Release date: 2016-05-11
 
 
 == Upgrade Notice ==
+= 1.0.1 =
+Support comment date.
 
 = 1.0.0 =
 Fix leap year problem.

@@ -3,7 +3,7 @@
 Plugin Name: Seed Buddhist Year
 Plugin URI: https://github.com/SeedThemes/seed-buddhist-year
 Description: A plugin for setting the year to the buddhist year
-Version: 1.0.0
+Version: 1.0.1
 Author: SeedThemes
 Author URI: http://www.seedthemes.com
 License: GPL2
