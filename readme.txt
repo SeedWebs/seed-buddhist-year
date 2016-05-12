@@ -54,6 +54,7 @@ This plugin will not work if your theme user other standard ways to output the d
 = 1.0.0 =
 
 Release date: 2016-05-11
+
 * Fix leap year problem.
 
 = 0.9.0 =
