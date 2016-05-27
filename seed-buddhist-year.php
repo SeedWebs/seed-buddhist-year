@@ -3,7 +3,7 @@
 Plugin Name: Seed Buddhist Year
 Plugin URI: https://github.com/SeedThemes/seed-buddhist-year
 Description: A plugin for setting the year to the buddhist year
-Version: 1.0.1
+Version: 1.0.2
 Author: SeedThemes
 Author URI: http://www.seedthemes.com
 License: GPL2
@@ -66,6 +66,26 @@ if(class_exists('Seed_Buddhist_Year'))
     $Seed_Buddhist_Year = new Seed_Buddhist_Year();
 }
 
+	function seed_is_return_buddhist( $format ) {
+		$return = false;
+
+		if ( 	( FALSE !== ( $offset = stripos( $format , 'y' ) ) )
+				&& strcmp( $format, DATE_ATOM )
+				&& strcmp( $format, DATE_COOKIE )
+				&& strcmp( $format, DATE_ISO8601 )
+				&& strcmp( $format, DATE_RFC822 )
+				&& strcmp( $format, DATE_RFC850 )
+				&& strcmp( $format, DATE_RFC1036 )
+				&& strcmp( $format, DATE_RFC1123 )
+				&& strcmp( $format, DATE_RFC2822 )
+				&& strcmp( $format, DATE_RFC3339 )
+				&& strcmp( $format, DATE_RSS )
+				&& strcmp( $format, DATE_W3C )
+		) $return = true;
+
+		return $return;
+	}
+
 	add_filter( 'get_the_date', 'seed_buddhist_year_get_the_date', 10, 3 );
 	add_filter( 'the_date', 'seed_buddhist_year_the_date', 10, 4 );
 	add_filter( 'get_the_time', 'seed_buddhist_year_get_the_time', 10, 3 );
@@ -104,7 +124,7 @@ if(class_exists('Seed_Buddhist_Year'))
 			$format = get_option( 'date_format' );
 		}
 
-		if( FALSE !== ( $offset = stripos( $format , 'y' ) ) ) {
+		if( seed_is_return_buddhist( $format ) ) {
 			$return = seed_buddhist_year( $format, $the_date );
 		} else {
 			$return = $content;
@@ -139,7 +159,7 @@ if(class_exists('Seed_Buddhist_Year'))
 			$format = get_option( 'time_format' );
 		}
 
-		if( FALSE !== ( $offset = stripos( $format , 'y' ) ) ) {
+		if( seed_is_return_buddhist( $format ) ) {
 			$return = seed_buddhist_year( $format, $the_date );
 		} else {
 			$return = $content;

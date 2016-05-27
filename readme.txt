@@ -51,6 +51,9 @@ This plugin will not work if your theme user other standard ways to output the d
 
 == Changelog ==
 
+= 1.0.2 =
+* Fix Predefined Constants problem.
+
 = 1.0.1 =
 * Support comment date.
 
