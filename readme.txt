@@ -4,7 +4,7 @@ Donate link: http://seedthemes.com/
 Tags: Buddhist, date, time, year
 Requires at least: 4.0.1
 Tested up to: 4.5.2
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,7 +52,7 @@ This plugin will not work if your theme user other standard ways to output the d
 == Changelog ==
 
 = 1.0.2 =
-* Fix Predefined Constants problem.
+* Fix Predefined Constants problem (to support Yoast SEO).
 
 = 1.0.1 =
 * Support comment date.
@@ -66,6 +66,10 @@ This plugin will not work if your theme user other standard ways to output the d
 
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Fix Predefined Constants problem (to support Yoast SEO).
+
 = 1.0.1 =
 Support comment date.
 
