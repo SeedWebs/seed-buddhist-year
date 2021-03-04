@@ -92,13 +92,13 @@ if(class_exists('Seed_Buddhist_Year'))
 	add_filter( 'the_time', 'seed_buddhist_year_the_time', 10, 2 );
 
 	add_filter( 'get_comment_date', 'seed_buddhist_year_get_comment_date', 10, 3 );
-	add_filter( 'get_comment_time', 'seed_buddhist_year_get_comment_time', 10, 4 );
+	add_filter( 'get_comment_time', 'seed_buddhist_year_get_comment_time', 10, 5 );
 
 	function seed_buddhist_year_get_comment_date( $date, $format, $comment ) {
 		return seed_buddhist_year( $format, strtotime( $comment->comment_date ) );
 	}
 
-	function seed_buddhist_year_get_comment_time ( $time, $format, $gmt = false, $translate = true ) {
+	function seed_buddhist_year_get_comment_time ( $time, $format, $gmt = false, $translate = true, $comment ) {
 		return seed_buddhist_year( $format, strtotime( $comment->comment_date ) );
 	}
 
