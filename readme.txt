@@ -3,8 +3,8 @@ Contributors: SeedThemes
 Donate link: http://seedthemes.com/
 Tags: Buddhist, date, time, year
 Requires at least: 4.0.1
-Tested up to: 4.9.8
-Stable tag: 1.0.2
+Tested up to: 5.7.0
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,8 @@ Just install and it will overide these functions,
 * the_time()
 
 Then, this plugin will not work if your theme user other standard ways to output the date and time.
+
+Official development of Seed Buddhist Year is on GitHub, with official stable releases published on WordPress.org. The GitHub repo can be found at https://github.com/SeedThemes/seed-buddhist-year/. Please use the Support tab for potential bugs, issues, or enhancement ideas.
 
 
 == Installation ==
@@ -53,30 +55,19 @@ And we found that it's not working on 32 Bit CPU. Please check that your hosting
 
 == Changelog ==
 
+= 1.0.3 =
+* Date: 5 MAR 2021
+* Fix: undefined variable: comment
+
 = 1.0.2 =
-* Fix Predefined Constants problem (to support Yoast SEO).
+* Fix: Predefined Constants problem (to support Yoast SEO).
 
 = 1.0.1 =
-* Support comment date.
+* New: Support comment date.
 
 = 1.0.0 =
-* Release date: 2016-05-11
-* Fix leap year problem.
+* Date: 2016-05-11
+* Fix: leap year problem.
 
 = 0.9.0 =
 * First version.
-
-
-== Upgrade Notice ==
-
-= 1.0.2 =
-Fix Predefined Constants problem (to support Yoast SEO).
-
-= 1.0.1 =
-Support comment date.
-
-= 1.0.0 =
-Fix leap year problem.
-
-= 0.9.0 =
-Just start.
