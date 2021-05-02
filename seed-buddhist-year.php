@@ -94,7 +94,7 @@ function seed_buddhist_year_get_comment_date( $date, $format, $comment ) {
 }
 
 function seed_buddhist_year_get_comment_time ( $time, $format, $gmt = false, $translate = true, $comment ) {
-	return seed_buddhist_year( $format, strtotime( $comment->comment_date ) );
+	return fix_seed_buddhist_year_comment_time( $format, strtotime( $comment->comment_date ) );
 }
 
 function seed_buddhist_year_get_the_date($content = '', $format = '', $post_input = null) {
@@ -165,6 +165,10 @@ function seed_buddhist_year_get_the_time($content = '', $format = '', $post_inpu
 
 function seed_buddhist_year_the_time($content = '', $format = '') {
 	return get_the_time( $format );
+}
+
+function fix_seed_buddhist_year_comment_time($content = '', $time = '') {
+	return date('H:i:s', $time );
 }
 
 function seed_buddhist_year( $format = '', $time = null ) {
