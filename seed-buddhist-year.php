@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Seed Buddhist Year
-Plugin URI: https://github.com/SeedThemes/seed-buddhist-year
+Plugin URI: https://github.com/seedwebs/seed-buddhist-year
 Description: A plugin for setting the year to the buddhist year
 Version: 1.0.3
-Author: SeedThemes
-Author URI: http://www.seedthemes.com
+Author: Seed Webs
+Author URI: https://www.seedwebs.com
 License: GPL2
 */
 
