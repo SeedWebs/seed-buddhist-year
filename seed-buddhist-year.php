@@ -3,7 +3,7 @@
 Plugin Name: Seed Buddhist Year
 Plugin URI: https://github.com/seedwebs/seed-buddhist-year
 Description: A plugin for setting the year to the buddhist year
-Version: 1.0.3
+Version: 1.0.4
 Author: Seed Webs
 Author URI: https://www.seedwebs.com
 License: GPL2
@@ -93,7 +93,7 @@ function seed_buddhist_year_get_comment_date( $date, $format, $comment ) {
 	return seed_buddhist_year( $format, strtotime( $comment->comment_date ) );
 }
 
-function seed_buddhist_year_get_comment_time ( $time, $format, $gmt = false, $translate = true, $comment ) {
+function seed_buddhist_year_get_comment_time ( $time, $format, $gmt, $translate, $comment ) {
 	return fix_seed_buddhist_year_comment_time( $format, strtotime( $comment->comment_date ) );
 }
 
