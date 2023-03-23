@@ -54,6 +54,10 @@ And we found that it's not working on 32 Bit CPU. Please check that your hosting
 
 == Changelog ==
 
+= 1.0.4 =
+* Date: 23 FEB 2023
+* Fix: $gmt variable
+
 = 1.0.3 =
 * Date: 5 MAR 2021
 * Fix: undefined variable: comment
