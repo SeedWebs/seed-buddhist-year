@@ -131,12 +131,15 @@ function seed_buddhist_year_get_comment_time($time, $format = '', $gmt = false, 
     }
 
     if ($format != '') {
-        if (seed_is_return_buddhist($format)) {
+        // Has a year character (y, Y) that is not escaped with a backslash.
+        $has_year = false !== stripos(preg_replace('/\\\\./s', '', (string) $format), 'y');
+
+        if ($has_year && seed_is_return_buddhist($format)) {
             return seed_buddhist_year($format, strtotime($comment->comment_date));
         }
 
         // 'c', 'r', 'U', 'G' and DATE_* are values for code: keep them as WordPress made them.
-        if (in_array($format, array('c', 'r', 'U', 'G'), true) || false !== stripos($format, 'y')) {
+        if ($has_year || in_array($format, array('c', 'r', 'U', 'G'), true)) {
             return $time;
         }
     }
@@ -215,6 +218,9 @@ function seed_buddhist_year($format = '', $time = null)
         $time = time();
     }
 
+    // 1.0.4 read the format with stripos()/substr(), which also accept non-string values.
+    $format = (string) $format;
+
     // Positions of the year characters (y, Y) that are not escaped with a backslash.
     $years = array();
     $length = strlen($format);
@@ -264,21 +270,37 @@ function seed_buddhist_year($format = '', $time = null)
 }
 
 // WordPress 6.9+ prints the Post Date block with wp_date() instead of get_the_date().
-add_filter('render_block_core/post-date', 'seed_buddhist_year_render_post_date', 10, 2);
+// Priority 99: run after other code that changes this block (see the check on the text below).
+add_filter('render_block_core/post-date', 'seed_buddhist_year_render_post_date', 99, 2);
 
-function seed_buddhist_year_render_post_date($block_content, $block)
+function seed_buddhist_year_render_post_date($block_content, $block = array())
 {
-    $attrs = (isset($block['attrs']) && is_array($block['attrs'])) ? $block['attrs'] : array();
-
-    // Modified dates are not changed (as in 1.0.4).
-    if ((isset($attrs['displayType']) && 'modified' === $attrs['displayType'])
-            || (isset($attrs['metadata']['bindings']['datetime']['args']['field'])
-                && 'modified' === $attrs['metadata']['bindings']['datetime']['args']['field'])
-    ) {
+    if (!is_string($block_content) || !is_array($block)) {
         return $block_content;
     }
 
-    $format = empty($attrs['format']) ? get_option('date_format') : $attrs['format'];
+    $attrs = (isset($block['attrs']) && is_array($block['attrs'])) ? $block['attrs'] : array();
+
+    // Which date a Block Bindings source gives the block. Older Gutenberg builds called the
+    // argument "key", and WordPress still reads it when "field" is empty.
+    $binding = (isset($attrs['metadata']['bindings']['datetime']) && is_array($attrs['metadata']['bindings']['datetime']))
+        ? $attrs['metadata']['bindings']['datetime'] : array();
+    $binding_args = (isset($binding['args']) && is_array($binding['args'])) ? $binding['args'] : array();
+    $field = '';
+
+    if (!empty($binding_args['field'])) {
+        $field = $binding_args['field'];
+    } elseif (!empty($binding_args['key']) && isset($binding['source']) && 'core/post-data' === $binding['source']) {
+        $field = $binding_args['key'];
+    }
+
+    // Modified dates are not changed (as in 1.0.4).
+    if ((isset($attrs['displayType']) && 'modified' === $attrs['displayType']) || 'modified' === $field) {
+        return $block_content;
+    }
+
+    // Like WordPress, ignore a format that is not a string.
+    $format = (!empty($attrs['format']) && is_string($attrs['format'])) ? $attrs['format'] : get_option('date_format');
 
     if ('human-diff' === $format || !seed_is_return_buddhist($format)) {
         return $block_content;
@@ -295,14 +317,18 @@ function seed_buddhist_year_render_post_date($block_content, $block)
         return $block_content;
     }
 
-    // Site-local time as a timestamp, like strtotime( $post->post_date ) in the get_the_date filter.
-    $local = strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $timestamp)));
+    // The same moment as a site-local 'Y-m-d H:i:s' string.
+    $local_mysql = get_date_from_gmt(gmdate('Y-m-d H:i:s', $timestamp));
 
-    // Change the text only while it is the CE date WordPress printed. On WordPress 5.7-6.8 the
-    // get_the_date filter has already given the BE year, and other code may have changed the text.
-    if ($m[3] !== esc_html(date_i18n($format, $local))) {
+    // Change the text only while it is the CE date WordPress printed (mysql2date() makes the same
+    // wp_date() call as the block on WordPress 5.3+). On WordPress 5.7-6.8 the get_the_date filter
+    // has already given the BE year, and other code may have changed the text.
+    if ($m[3] !== esc_html(mysql2date($format, $local_mysql))) {
         return $block_content;
     }
+
+    // Site-local time as a timestamp, like strtotime( $post->post_date ), whatever PHP's default timezone is.
+    $local = strtotime($local_mysql . ' +0000');
 
     $link_open = $m[2];
     $link_close = isset($m[4]) ? $m[4] : '';

@@ -24,7 +24,7 @@ Just install and activate. The year changes to BE in:
 These stay in CE on purpose, so feed readers, search engines and other code get the real date:
 
 * Post and comment feeds (RSS2, Atom)
-* `datetime` attributes, and dates in the 'c', 'r' and 'U' formats or a PHP DATE_* constant such as DATE_W3C
+* Dates in the 'c', 'r' and 'U' formats and in the PHP constants DATE_ATOM, DATE_COOKIE, DATE_ISO8601, DATE_RFC822, DATE_RFC850, DATE_RFC1036, DATE_RFC1123, DATE_RFC2822, DATE_RFC3339, DATE_RSS and DATE_W3C, which WordPress and most themes use for `datetime` attributes
 * The publish date when you schedule changes in the Customizer
 
 These are not changed:
@@ -52,7 +52,11 @@ The plugin only changes dates that come from the functions and blocks listed in 
 
 = My code needs the CE year. What should I use? =
 
-Ask for the 'c' or 'U' format, or a PHP DATE_* constant, for example get_the_date( DATE_W3C ). These always return the CE year.
+Ask for the 'c' or 'U' format, or DATE_W3C, for example get_the_date( DATE_W3C ). These always return the CE year. Other formats that include the year, such as 'Y-m-d' or the newer PHP constants DATE_RFC3339_EXTENDED and DATE_RFC7231, get the BE year.
+
+= I added my own code to show the BE year in the Post Date block. Do I still need it? =
+
+No. Version 1.0.5 changes the block itself, and leaves the date alone when other code has already changed it, so you can remove your code.
 
 = Why do comment times show seconds? =
 
@@ -72,6 +76,7 @@ No. Adding 543 years needs 64-bit PHP. Please check that your hosting server run
 * Fix: The Post Date block shows the BE year again on WordPress 6.9 and later.
 * Fix: Comment feeds (RSS2, Atom) show the real comment date. Before, every comment was dated today.
 * Fix: Comment `datetime` attributes and get_comment_time( 'U' ) return the real value.
+* Fix: get_comment_time() with a format that includes the year shows the BE year. Before, it always showed the time.
 * Fix: Saving a scheduled change in the Customizer no longer moves its publish date 543 years ahead. If you scheduled Customizer changes before this update, open the Customizer and check the publish date.
 * Fix: On WordPress 6.3 to 6.8, the Post Date block set to the modified date no longer disappears.
 * Fix: get_comment_date() keeps the CE year for DATE_* formats, like post dates do.
