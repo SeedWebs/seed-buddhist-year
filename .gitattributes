@@ -1,0 +1,4 @@
+# Kept in Git, left out of the plugin zip (git archive / WordPress.org package)
+/.gitattributes export-ignore
+/GLOSSARY.md export-ignore
+/docs export-ignore
