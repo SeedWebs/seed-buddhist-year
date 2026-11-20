@@ -3,18 +3,22 @@
 Plugin Name: Seed Buddhist Year
 Plugin URI: https://github.com/seedwebs/seed-buddhist-year
 Description: A plugin for setting the year to the buddhist year
-Version: 1.0.4
+Version: 1.0.5
+Requires at least: 4.9
+Requires PHP: 7.4
 Author: Seed Webs
 Author URI: https://www.seedwebs.com
-License: GPL2
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 /*
-Copyright 2016-2020 Seed Webs Co., Ltd.  (email : info@seedwebs.com)
+Copyright 2016-2026 Seed Webs Co., Ltd.  (email : info@seedwebs.com)
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License, version 2, as
-published by the Free Software Foundation.
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +29,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if(!class_exists('Seed_Buddhist_Year')) {
     class Seed_Buddhist_Year
@@ -80,6 +88,8 @@ function seed_is_return_buddhist($format)
             && strcmp($format, DATE_RFC3339)
             && strcmp($format, DATE_RSS)
             && strcmp($format, DATE_W3C)
+            // WordPress 6.3-6.8: the Post Date block compares get_the_modified_date( 'Ymdhi' ) with get_the_date( 'Ymdhi' ).
+            && strcmp($format, 'Ymdhi')
     ) {
         $return = true;
     }
@@ -95,34 +105,56 @@ add_filter('the_time', 'seed_buddhist_year_the_time', 10, 2);
 add_filter('get_comment_date', 'seed_buddhist_year_get_comment_date', 10, 3);
 add_filter('get_comment_time', 'seed_buddhist_year_get_comment_time', 10, 5);
 
-function seed_buddhist_year_get_comment_date($date, $format, $comment)
+function seed_buddhist_year_get_comment_date($date, $format = '', $comment = null)
 {
+    if (!is_object($comment)) {
+        return $date;
+    }
+
+    if ($format == '') {
+        $format = get_option('date_format');
+    }
+
+    // No year, a DATE_* constant or 'Ymdhi': a value for code, keep the CE date from WordPress.
+    if (!seed_is_return_buddhist($format)) {
+        return $date;
+    }
+
     return seed_buddhist_year($format, strtotime($comment->comment_date));
 }
 
-function seed_buddhist_year_get_comment_time($time, $format, $gmt, $translate, $comment)
+function seed_buddhist_year_get_comment_time($time, $format = '', $gmt = false, $translate = true, $comment = null)
 {
-    return fix_seed_buddhist_year_comment_time($format, strtotime($comment->comment_date));
+    // Comment feeds call get_comment_time( 'Y-m-d H:i:s', true, false ): keep the real date from WordPress.
+    if ($gmt || !$translate || !is_object($comment)) {
+        return $time;
+    }
+
+    if ($format != '') {
+        if (seed_is_return_buddhist($format)) {
+            return seed_buddhist_year($format, strtotime($comment->comment_date));
+        }
+
+        // 'c', 'r', 'U', 'G' and DATE_* are values for code: keep them as WordPress made them.
+        if (in_array($format, array('c', 'r', 'U', 'G'), true) || false !== stripos($format, 'y')) {
+            return $time;
+        }
+    }
+
+    // Comment time for readers: 24-hour time with seconds, as in 1.0.4.
+    return mysql2date('H:i:s', $comment->comment_date, false);
 }
 
 function seed_buddhist_year_get_the_date($content = '', $format = '', $post_input = null)
 {
-    global $post;
+    $post_obj = get_post($post_input);
 
-    $the_date = null;
-
-    if (is_int($post_input)) {
-        $post_id = $post_input;
-        $the_date = get_post($post_id)->post_date;
-    } elseif($post_input !== null) {
-        $post_id = $post_input->ID;
-        $the_date = $post_input->post_date;
-    } else {
-        $post_id = $post->ID;
-        $the_date = $post->post_date;
+    // No post (for example other code calling apply_filters() itself): keep the value we got.
+    if (!$post_obj) {
+        return $content;
     }
 
-    $the_date = strtotime($the_date);
+    $the_date = strtotime($post_obj->post_date);
 
     if($format == '') {
         $format = get_option('date_format');
@@ -144,22 +176,14 @@ function seed_buddhist_year_the_date($content = '', $format = '', $before = '', 
 
 function seed_buddhist_year_get_the_time($content = '', $format = '', $post_input = null)
 {
-    global $post;
+    $post_obj = get_post($post_input);
 
-    $the_date = null;
-
-    if (is_int($post_input)) {
-        $post_id = $post_input;
-        $the_date = get_post($post_id)->post_date;
-    } elseif($post_input !== null) {
-        $post_id = $post_input->ID;
-        $the_date = $post_input->post_date;
-    } else {
-        $post_id = $post->ID;
-        $the_date = $post->post_date;
+    // No post (for example other code calling apply_filters() itself): keep the value we got.
+    if (!$post_obj) {
+        return $content;
     }
 
-    $the_date = strtotime($the_date);
+    $the_date = strtotime($post_obj->post_date);
 
     if($format == '') {
         $format = get_option('time_format');
@@ -179,11 +203,6 @@ function seed_buddhist_year_the_time($content = '', $format = '')
     return get_the_time($format);
 }
 
-function fix_seed_buddhist_year_comment_time($content = '', $time = '')
-{
-    return date('H:i:s', $time);
-}
-
 function seed_buddhist_year($format = '', $time = null)
 {
     $return = '';
@@ -196,10 +215,22 @@ function seed_buddhist_year($format = '', $time = null)
         $time = time();
     }
 
-    if(false !== ($offset = stripos($format, 'y'))) {
+    // Positions of the year characters (y, Y) that are not escaped with a backslash.
+    $years = array();
+    $length = strlen($format);
+
+    for ($i = 0; $i < $length; $i++) {
+        if ('\\' === $format[$i]) {
+            $i++; // The next character is printed as it is.
+        } elseif ('y' === $format[$i] || 'Y' === $format[$i]) {
+            $years[] = $i;
+        }
+    }
+
+    if($years) {
         $index = 0;
 
-        while($offset !== false) {
+        foreach($years as $offset) {
             $_sub_format = substr($format, $index, $offset - $index);
 
             if($_sub_format != '') {
@@ -214,7 +245,6 @@ function seed_buddhist_year($format = '', $time = null)
             $return .= date_i18n($year_format, strtotime("543 years", $time));
 
             $index = $offset + 1;
-            $offset = stripos($format, 'y', $index);
         }
 
         $_sub_format = substr($format, $index);
@@ -231,4 +261,61 @@ function seed_buddhist_year($format = '', $time = null)
     }
 
     return $return;
+}
+
+// WordPress 6.9+ prints the Post Date block with wp_date() instead of get_the_date().
+add_filter('render_block_core/post-date', 'seed_buddhist_year_render_post_date', 10, 2);
+
+function seed_buddhist_year_render_post_date($block_content, $block)
+{
+    $attrs = (isset($block['attrs']) && is_array($block['attrs'])) ? $block['attrs'] : array();
+
+    // Modified dates are not changed (as in 1.0.4).
+    if ((isset($attrs['displayType']) && 'modified' === $attrs['displayType'])
+            || (isset($attrs['metadata']['bindings']['datetime']['args']['field'])
+                && 'modified' === $attrs['metadata']['bindings']['datetime']['args']['field'])
+    ) {
+        return $block_content;
+    }
+
+    $format = empty($attrs['format']) ? get_option('date_format') : $attrs['format'];
+
+    if ('human-diff' === $format || !seed_is_return_buddhist($format)) {
+        return $block_content;
+    }
+
+    // WordPress 6.9 puts the link inside <time>, WordPress 7.0+ puts <time> inside the link.
+    if (!preg_match('#<time datetime="([^"]+)">(<a [^>]*>)?([^<]*)(</a>)?</time>#', $block_content, $m)) {
+        return $block_content;
+    }
+
+    $timestamp = strtotime($m[1]);
+
+    if (false === $timestamp) {
+        return $block_content;
+    }
+
+    // Site-local time as a timestamp, like strtotime( $post->post_date ) in the get_the_date filter.
+    $local = strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $timestamp)));
+
+    // Change the text only while it is the CE date WordPress printed. On WordPress 5.7-6.8 the
+    // get_the_date filter has already given the BE year, and other code may have changed the text.
+    if ($m[3] !== esc_html(date_i18n($format, $local))) {
+        return $block_content;
+    }
+
+    $link_open = $m[2];
+    $link_close = isset($m[4]) ? $m[4] : '';
+    $time_tag = '<time datetime="' . $m[1] . '">' . $link_open . esc_html(seed_buddhist_year($format, $local)) . $link_close . '</time>';
+
+    return str_replace($m[0], $time_tag, $block_content);
+}
+
+// Customizer: WordPress reads the scheduled publish date with get_the_time( 'Y-m-d H:i:s' ) and sends
+// it back when the changes are saved, so it has to stay in CE on the Customizer screen.
+add_action('customize_controls_init', 'seed_buddhist_year_customize_controls_init');
+
+function seed_buddhist_year_customize_controls_init()
+{
+    remove_filter('get_the_time', 'seed_buddhist_year_get_the_time', 10);
 }
